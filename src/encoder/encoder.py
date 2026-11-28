@@ -31,6 +31,7 @@ class Encoder:
 
     DEFAULT_COUNT_ENABLE_GPIO = 26
     INTERRUPT_GPIO = 19
+    DEFAULT_PPR = 5120
 
     def __init__(
         self,
@@ -168,7 +169,12 @@ def build_parser() -> argparse.ArgumentParser:
         help="BCM GPIO connected to Counter Click CNT_EN (default: 26)",
     )
     parser.add_argument("--interval", type=float, default=0.1)
-    parser.add_argument("--ppr", type=int, default=None)
+    parser.add_argument(
+        "--ppr",
+        type=int,
+        default=Encoder.DEFAULT_PPR,
+        help="encoder pulses per revolution (default: 5120 for AMT10E2-V)",
+    )
     parser.add_argument("--zero", action="store_true")
     parser.add_argument(
         "--quadrature",
@@ -185,7 +191,7 @@ def main() -> int:
 
     if args.interval <= 0:
         parser.error("--interval must be positive")
-    if args.ppr is not None and args.ppr <= 0:
+    if args.ppr <= 0:
         parser.error("--ppr must be positive")
 
     try:
@@ -220,10 +226,9 @@ def main() -> int:
                     f"Count/s: {counts_per_second:11.1f}"
                 )
 
-                if args.ppr is not None:
-                    counts_per_revolution = args.ppr * encoder.quadrature
-                    rpm = counts_per_second * 60 / counts_per_revolution
-                    message += f" | RPM: {rpm:9.2f}"
+                counts_per_revolution = args.ppr * encoder.quadrature
+                rpm = counts_per_second * 60 / counts_per_revolution
+                message += f" | RPM: {rpm:9.2f}"
 
                 print(message)
                 previous_count = count

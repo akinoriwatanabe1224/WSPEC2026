@@ -71,11 +71,13 @@ sudo apt install python3-spidev python3-gpiozero python3-lgpio
 python3 -m src.encoder.encoder --zero
 ```
 
-エンコーダーの仕様が600 PPR（A相の1回転あたりパルス数）なら、4逓倍でRPMも表示できます。
+使用するAMT10E2-Vは5120 PPRを既定値としています。LS7366Rを4逓倍で使用するため、1回転は20480カウントです。`--ppr`を指定しなくてもRPMが表示されます。
 
 ```bash
-python3 -m src.encoder.encoder --zero --ppr 600
+python3 -m src.encoder.encoder --zero
 ```
+
+AMT10E2-VのDIPスイッチで分解能を変更した場合だけ、`--ppr`で新しいPPRを指定してください。
 
 プログラムから利用する場合は次のように読み込みます。
 
