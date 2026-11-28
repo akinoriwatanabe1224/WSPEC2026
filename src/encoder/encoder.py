@@ -203,13 +203,19 @@ def main() -> int:
                 encoder.reset_count()
 
             mdr0, mdr1 = encoder.read_registers()
+            counts_per_revolution = args.ppr * encoder.quadrature
             print("Encoder initialized")
             print(f"MDR0: 0x{mdr0:02X}")
             print(f"MDR1: 0x{mdr1:02X}")
+            print(
+                f"Resolution: {args.ppr} PPR x{encoder.quadrature} = "
+                f"{counts_per_revolution} counts/rev"
+            )
             print("Press Ctrl+C to stop")
-            print("-" * 72)
+            print("-" * 91)
 
             previous_count = encoder.read_count()
+            run_count = 0
             previous_time = time.monotonic()
 
             while True:
@@ -218,15 +224,17 @@ def main() -> int:
                 now = time.monotonic()
                 elapsed = now - previous_time
                 delta = encoder.count_difference(count, previous_count)
+                run_count += delta
                 counts_per_second = delta / elapsed
+                run_revolutions = run_count / counts_per_revolution
 
                 message = (
                     f"Count: {count:11d} | "
+                    f"RunRevs: {run_revolutions:10.4f} | "
                     f"Delta: {delta:8d} | "
                     f"Count/s: {counts_per_second:11.1f}"
                 )
 
-                counts_per_revolution = args.ppr * encoder.quadrature
                 rpm = counts_per_second * 60 / counts_per_revolution
                 message += f" | RPM: {rpm:9.2f}"
 

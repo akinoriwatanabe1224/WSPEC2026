@@ -71,13 +71,19 @@ sudo apt install python3-spidev python3-gpiozero python3-lgpio
 python3 -m src.encoder.encoder --zero
 ```
 
-使用するAMT10E2-Vは5120 PPRを既定値としています。LS7366Rを4逓倍で使用するため、1回転は20480カウントです。`--ppr`を指定しなくてもRPMが表示されます。
+使用するAMT10E2-Vは5120 PPRを既定値としています。LS7366Rを4逓倍で使用するため、1回転は20480カウントです。`--ppr`を指定しなくても、実行開始からの符号付き回転数`RunRevs`とRPMが表示されます。正方向へ回すと`RunRevs`が増え、逆方向へ回すと減ります。
 
 ```bash
 python3 -m src.encoder.encoder --zero
 ```
 
 AMT10E2-VのDIPスイッチで分解能を変更した場合だけ、`--ppr`で新しいPPRを指定してください。
+
+```text
+Count:       20480 | RunRevs:     1.0000 | Delta:      512 | Count/s:      5120.0 | RPM:     15.00
+```
+
+`RunRevs`は`--zero`の有無に関係なく、プログラムを起動した時点を0回転として表示します。`Count`にはLS7366Rが保持している生のカウント値が表示されます。
 
 プログラムから利用する場合は次のように読み込みます。
 
